@@ -1,0 +1,22 @@
+pipeline {
+    agent any
+    stages {
+        stage ('Checkout') {
+            steps {
+                git branch: 'master',
+                    credentialsId: '8d660c26-1159-497e-8785-ea81619d9538',
+                    url: 'https://github.com/karanloona/noname.git'
+            }
+        }
+        stage ('Build') {
+            steps {
+                echo 'Build'
+            }
+        }
+        stage ('Deploy') {
+            steps {
+                echo 'Deploy'
+            }
+        }
+    }
+}
