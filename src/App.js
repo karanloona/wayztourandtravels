@@ -1,25 +1,72 @@
-import logo from './logo.svg';
-import './App.css';
+import About from './layouts/About';
+import Booking from './layouts/Booking';
+import Testimonials from './layouts/Testimonials';
+import Gallery from './layouts/Gallery';
+import Header from './layouts/Header';
+import LastMinuteOffer from './layouts/LastMinuteOffer';
+import PromoSection from './layouts/PromoSection';
+import LeftMovement from './layouts/LeftMovement';
+import 'animate.css';
+import Footer from './layouts/Footer';
+import TourInformation from './layouts/TourInformation';
+import CustomizablePackages from './layouts/CustomizablePackages';
+import Login from './layouts/Pages/Login';
+import { Dashboard } from './layouts/Pages/Dashboard';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import BookingAdmin from './layouts/Pages/BookingAdmin';
+import BookingDetails from './layouts/BookingDetails';
+import InquiryAdmin from './layouts/Pages/InquiryAdmin';
 
-function App() {
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Header /> {/* Header remains on all pages */}
+      <Routes>
+        {/* Main page route */}
+        <Route
+          path="/"
+          element={
+            <>
+              <Booking />
+              {/* <About /> */}
+              <TourInformation />
+              <CustomizablePackages />
+              {/* <Testimonials /> */}
+              <Gallery />
+              <LeftMovement />
+              <PromoSection />
+              <Footer />
+            </>
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <>
+              <Login />
+              <Footer />
+            </>
+          }
+        />
+        <Route
+          path="/booking"
+          element={
+            <>
+              <BookingDetails />
+              <Footer />
+            </>
+          }
+        />
+        <Route path="/booking/:uuid" element={
+            <>
+              <BookingDetails />
+              <Footer />
+            </>} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard/bookings" element={<BookingAdmin />} />
+        <Route path="/dashboard/inquiry" element={<InquiryAdmin />} />
+        
+      </Routes>
+    </Router>
   );
 }
-
-export default App;

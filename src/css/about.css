@@ -1,0 +1,50 @@
+#about_h {
+    padding-bottom: 60px;
+}
+.p_3 {
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+.bg-light {
+    --bs-bg-opacity: 1;
+    background-color: rgba(248, 249, 250,1);
+}
+
+.section-title span {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1;
+    font-family: Nunito, sans-serif;
+    margin-bottom: 15px;
+    display: inline-block;
+}
+
+.section-title h2 {
+    
+    font-weight: bold;
+    font-family: Nunito, sans-serif;
+}
+
+.section-title p {
+    color: #455151;
+    font-family: Nunito, sans-serif;
+    font-weight: 500;
+}
+
+@keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  
