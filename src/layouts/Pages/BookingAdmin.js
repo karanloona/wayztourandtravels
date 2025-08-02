@@ -92,9 +92,18 @@ export const BookingAdmin = () => {
     }
   };
 
-  const handleRefundAction = async (uuid, setButtonText) => {
+  const handleRefundAction = async (uuid, setButtonText, isRefreshOnly = false) => {
     const token = window.localStorage.getItem("token");
     try {
+      // If this is a refresh action, we need to check if refund was already initiated
+      if (isRefreshOnly) {
+        const booking = bookings.find(b => b.uuid === uuid);
+        if (!booking || booking.paymentStatus === 0 || booking.paymentStatus === 1) {
+          alert("Cannot refresh refund status - no refund has been initiated yet.");
+          return;
+        }
+      }
+
       const response = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}booking/refund/check-or-initiate`,
         {
@@ -108,8 +117,9 @@ export const BookingAdmin = () => {
       );
 
       const data = await response.json();
-      if (!response.ok)
+      if (!response.ok) {
         throw new Error(data.message || "Refund action failed");
+      }
 
       if (setButtonText) {
         setButtonText(
@@ -140,7 +150,10 @@ export const BookingAdmin = () => {
         )
       );
 
-      window.location.reload()
+      // Only reload if it's not a refresh action
+      if (!isRefreshOnly) {
+        window.location.reload();
+      }
     } catch (error) {
       console.error("Refund error:", error);
       alert(error.message || "Error processing refund");
@@ -277,10 +290,10 @@ export const BookingAdmin = () => {
           };
 
           const getTooltipText = () => {
-            if (!hasTripProtection) return "This booking does not include trip protection.";
+            if (!hasTripProtection) return "This booking does not include trip protection. Refunds are only available for bookings with trip protection.";
             if (isRefunded) return "The refund has already been processed.";
             if (booking.refundStatus) return "Click to check current refund status.";
-            return "Click to initiate the refund process.";
+            return "Click to initiate the refund process. Note: Trip protection fee ($18) will be deducted from refund amount.";
           };
 
           const [buttonText, setButtonText] = useState(getButtonText());
@@ -307,17 +320,27 @@ export const BookingAdmin = () => {
         Cell: ({ row }) => {
           const booking = row.original;
           const isRefunded = booking.paymentStatus === 3;
+          const hasTripProtection = booking.tripProtection === true;
+          const canRefresh = booking.paymentStatus === 2; // Only can refresh if refund is initiated
       
           return (
             <button
-              onClick={() => handleRefundAction(booking.uuid)}
-              title={isRefunded ? "Refund completed" : "Check refund status"}
+              onClick={() => handleRefundAction(booking.uuid, null, true)}
+              title={
+                !hasTripProtection 
+                  ? "No trip protection - no refund available" 
+                  : isRefunded 
+                    ? "Refund completed" 
+                    : canRefresh 
+                      ? "Check refund status" 
+                      : "No refund initiated yet"
+              }
               className={`p-2 rounded-md text-white text-xs sm:text-sm ${
-                isRefunded
+                isRefunded || !hasTripProtection || !canRefresh
                   ? "bg-gray-400 cursor-not-allowed"
                   : "bg-blue-600 hover:bg-blue-700"
               } transition-all`}
-              disabled={isRefunded}
+              disabled={isRefunded || !hasTripProtection || !canRefresh}
             >
               <FontAwesomeIcon icon={faSync} />
             </button>

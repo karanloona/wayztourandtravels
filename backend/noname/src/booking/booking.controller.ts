@@ -114,10 +114,20 @@ export class BookingController {
       throw new NotFoundException('Booking or payment not found');
     }
 
+    // Check if booking has trip protection - only allow refunds for bookings with trip protection
+    if (!booking.tripProtection) {
+      throw new NotFoundException('Refunds are only available for bookings with trip protection');
+    }
+
     // Case 1: Refund not initiated yet
     if (booking.paymentStatus === 0 || booking.paymentStatus === 1) {
+      // Calculate refund amount: subtract trip protection cost ($18) from total
+      const tripProtectionCost = 18; // $18 trip protection cost
+      const refundAmount = Math.max(0, (booking.totalCost - tripProtectionCost) * 100); // Convert to cents
+      
       const refund = await stripe.refunds.create({
         payment_intent: booking.paymentId,
+        amount: refundAmount, // Refund amount minus trip protection
       });
 
       // Update paymentStatus to "2" = refund initiated
@@ -127,6 +137,7 @@ export class BookingController {
         message: 'Refund initiated',
         paymentStatus: 2,
         refund,
+        refundAmount: refundAmount / 100, // Return in dollars
       };
     }
 
